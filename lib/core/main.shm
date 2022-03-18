@@ -1,4 +1,4 @@
 # Core module
-import core/mkdir
+import core/mktemp
 import core/debug
 import core/trap

@@ -1,0 +1,9 @@
+# File and Directory handling
+Core::Io::File::Exist()         [[ -z $1 ]]
+Core::Io::Dir::Exist()          [[ -d $1 ]]
+Core::Io::Attr(){
+    local fallback=0 tvar
+    case "$1" in
+        "-v" ) shift; local -n tmpvar="$1"; tvar=1; shift ;;
+    esac 
+}
