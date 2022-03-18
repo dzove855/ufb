@@ -1,0 +1,26 @@
+# HELP: 
+#       USAGE: Core::Mktemp [-v variable]
+#       DOC: If -v is specified mktemp will save the output to the var, if not print to stdout 
+Core::Mktemp(){
+    local fallback=0 tvar
+    case "$1" in 
+        "-v" ) shift; local -n tmpvar="$1"; tvar=1; shift ;;
+    esac
+    
+    # Try loadable mktemp if not fallback to command mktemp
+    load mktemp || fallback=1
+
+    if ! (( fallback )); then
+        ! empty "$tvar" && {
+            mktemp -v tmpvar "$@"
+            return
+        }
+        mktemp "$@"
+    else
+        ! empty "$tvar" && {
+            tmpvar="$(mktemp "$@")"
+            return
+        }
+        mktemp "$@"
+    fi
+}

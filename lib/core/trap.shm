@@ -1,0 +1,25 @@
+# Trap handler
+# We should autogenerate the array
+declare -a CORE_TRAP_EXIT
+declare -a CORE_TRAP_ERR
+declare -a CORE_TRAP_SIGINT
+Core::Trap::Add(){
+    local func=$1
+    local -n arr=CORE_TRAP_${2^^}
+    
+    arr+=("$func")
+}
+
+Core::Trap::Run(){
+    local func trap=$1
+    local -n arr=CORE_TRAP_${1^^}
+
+    [[ ! -z "${arr[@]}" ]] && \
+        for func in "${arr[@]}"; do
+            PATH= type -p "$func" && $func
+        done
+}
+
+trap 'Core::Trap::Run exit'     EXIT
+trap 'Core::Trap::Run err'      ERR
+trap 'Core::Trap::Run sigin'    SIGINT
