@@ -1,9 +1,21 @@
 #!/usr/local/bin/bash
 
-inArray(){ 
+.isDigit()      [[ "$1" =~ ^[0-9]+$ ]]
+.matchString()  [[ "$1" == "$2" ]]
+.matchRegex()   [[ "$1" =~ $2 ]]
+.isEmpty()      [[ -z "$1" ]]
+
+.inArray(){
     local -n array="$1"
     [[ -z "$2" ]] && die "inArray need two arguments: ${BASH_SOURCE[1]}:${BASH_LINENO[0]}"
     [[ "${array[@]}" == *" $2 "* ]]
+}
+
+.trim(){
+    local -n var="$1"
+    : "${var# }"
+    : "${_% }"
+    var="$_"
 }
 
 die(){
@@ -14,7 +26,7 @@ die(){
 # load loadable builtins
 declare -a RUNTIME_LOAD
 load(){
-    inArray RUNTIME_LOAD "${BASH_LOADABLE_PATH:-/usr/local/lib/bash}/$1" || {
+    .inArray RUNTIME_LOAD "${BASH_LOADABLE_PATH:-/usr/local/lib/bash}/$1" || {
         enable -f "${BASH_LOADABLE_PATH:-/usr/local/lib/bash}/$1" "$1" &>/dev/null || return 1
         RUNTIME_LOAD+=("${BASH_LOADABLE_PATH:-/usr/local/lib/bash}/$1")
     }
@@ -32,7 +44,7 @@ import(){
 
     for path in "${importPath}"; do
         [[ -f "${path%/}/$1.shm" ]] && {
-            inArray RUNTIME_IMPORT "${path%/}/$1.shm" || {
+            .inArray RUNTIME_IMPORT "${path%/}/$1.shm" || {
                 RUNTIME_IMPORT+=("${path%/}/$1.shm")
                 source "${path%/}/$1.shm"
             }
