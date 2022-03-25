@@ -11,13 +11,13 @@ Core::Mktemp(){
     load mktemp || fallback=1
 
     if ! (( fallback )); then
-        ! empty "$tvar" && {
+        ! [[ -z "$tvar" ]] && {
             mktemp -v tmpvar "$@"
             return
         }
         mktemp "$@"
     else
-        ! empty "$tvar" && {
+        ! [[ -z "$tvar" ]] && {
             tmpvar="$(mktemp "$@")"
             return
         }

@@ -1,9 +1,58 @@
 # File and Directory handling
-Core::Io::File::Exist()         [[ -z $1 ]]
+Core::Io::File::Exist()         [[ -f $1 ]]
+Core::Io::File::Empty()         [[ -s $1 ]]
+Core::Io::File::Executable()    [[ -x $1 ]]
+Core::Io::File::Readable()      [[ -r $1 ]]
+Core::Io::File::Writeable()     [[ -w $1 ]]
+Core::Io::Symlink()             [[ -L $1 ]]
 Core::Io::Dir::Exist()          [[ -d $1 ]]
 Core::Io::Attr(){
-    local fallback=0 tvar
     case "$1" in
-        "-v" ) shift; local -n tmpvar="$1"; tvar=1; shift ;;
-    esac 
+        "-v" ) shift; local tmpvar="$1"; shift ;;
+    esac
+    local path="$1"
+
+    [[ -z $tmpvar ]] && declare -gA STAT
+    # Try to load stat if not working try to load file else use stat command
+    Core::Io::Attr::lstat "${tmpvar:-STAT}" "$path" && return
+    Core::Io::Attr::finfo "${tmpvar:-STAT}" "$path" && return
+    Core::Io::Attr::stat  "${tmpvar:-STAT}" "$path" && return
+}
+Core::Io::Attr::lstat(){
+    local -n tmpvar="$1"
+    local path="$2"
+
+    load stat && stat "$path"
+}
+Core::Io::Attr::finfo(){
+    local -n tmpvar="$1"
+    local path="$2"
+
+    load finfo || return 1
+
+    tmpvar["name"]="${path##*/}"
+    tmpvar["device"]=$(finfo -d "$path")
+    tmpvar["inode"]=$(finfo -i "$path")
+    tmpvar["type"]="Finfo module can't get information"
+    tmpvar["nlink"]=$(finfo -n "$path")
+    tmpvar["uid"]=$(finfo -u "$path")
+    tmpvar["gid"]=$(finfo -g "$path")
+    tmpvar["rdev"]="Finfo module can't get information"
+    tmpvar["size"]=$(finfo -s "$path")
+    tmpvar["atime"]=$(finfo -a "$path")
+    tmpvar["mtime"]=$(finfo -m "$path")
+    tmpvar["ctime"]=$(finfo -c "$path")
+    tmpvar["blksize"]="Finfo module can't get information"
+    tmpvar["blocks"]="Finfo module can't get information"
+    tmpvar["link"]=$(finfo -l "$path")
+    tmpvar["perms"]=$(finfo -o "$path")     
+}
+Core::Io::Attr::stat(){
+    local -n tmpvar="$1"
+    local path="$2"
+
+    read tmpvar["name"] tmpvar["device"] tmpvar["inode"] tmpvar["type"] _ tmpvar["nlink"] \
+        tmpvar["uid"] tmpvar["gid"] tmpvar["rdev"] tmpvar["size"] tmpvar["atime"] \
+        tmpvar["mtime"] tmpvar["ctime"] tmpvar["blksize"] tmpvar["blocks"] tmpvar["link"] \
+        tmpvar["perms"] < <(stat -c "%n %d %i %F %h %u %g %D %s %X %Y %Z %B %b %N %a" "$path")
 }
