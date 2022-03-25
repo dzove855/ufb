@@ -39,7 +39,7 @@ import(){
     local path
 
     # look for package file inside directory
-    [[ -z "$1" ]] && die "Unusual use of import ${BASH_SOURCE[1]}:${BASH_LINENO[0]}"
+    .isEmpty "$1" && die "Unusual use of import ${BASH_SOURCE[1]}:${BASH_LINENO[0]}"
     IFS=":" read -a importPath <<<"${IMPORT_PATH:-/usr/share/ufb}"
 
     for path in "${importPath}"; do
