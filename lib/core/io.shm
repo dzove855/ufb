@@ -51,8 +51,8 @@ Core::Io::Attr::stat(){
     local -n tmpvar="$1"
     local path="$2"
 
-    read tmpvar["name"] tmpvar["device"] tmpvar["inode"] tmpvar["type"] _ tmpvar["nlink"] \
+    read tmpvar["name"] tmpvar["device"] tmpvar["inode"] tmpvar["nlink"] \
         tmpvar["uid"] tmpvar["gid"] tmpvar["rdev"] tmpvar["size"] tmpvar["atime"] \
         tmpvar["mtime"] tmpvar["ctime"] tmpvar["blksize"] tmpvar["blocks"] tmpvar["link"] \
-        tmpvar["perms"] < <(stat -c "%n %d %i %F %h %u %g %D %s %X %Y %Z %B %b %N %a" "$path")
+        tmpvar["perms"] tmpvar["type"] < <(stat -c "%n %d %i %h %u %g %D %s %X %Y %Z i%B %b %N %a %F" "$path")
 }
