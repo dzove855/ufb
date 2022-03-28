@@ -13,6 +13,7 @@ Parser::Ini(){
     local -n assocvar="$tmpvar"
 
     while read -r line; do
+        .trim line
         if [[ -z "$line" ]]; then
             continue
         elif [[ "$line" =~ ^\[(.*)\]$ ]]; then
