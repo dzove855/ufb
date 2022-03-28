@@ -1,0 +1,25 @@
+Parser::Ini(){
+    case "$1" in
+        "-v" ) shift; local tmpvar="$1"; shift ;;
+    esac
+    local content="$1" key value
+
+    # if empty tmpvar set global var INI
+    [[ -z "$tmpvar" ]] && { 
+        declare -gA INI
+        tmpvar=INI
+    }
+    
+    local -n assocvar="$tmpvar"
+
+    while read -r line; do
+        if [[ -z "$line" ]]; then
+            continue
+        elif [[ "$line" =~ ^\[(.*)\]$ ]]; then
+            section="${BASH_REMATCH[1]}:"
+        else
+            IFS='=' read -r key value <<<"$line"
+            assocvar["${section}${key}"]="$value"
+        fi
+    done <<<"$content"    
+}
