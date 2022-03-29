@@ -37,6 +37,7 @@ Exit 2 and print message to STDERR
 ### load
 USAGE: load LOADABLE
 Enable the following builtin from $BASH_LOADABLE_PATH and add it to RUNTIME_LOAD
+NOTE: With bash 5.2 https://github.com/bminor/bash/blob/devel/NEWS-5.2#L32 The're will be a default PATH
 ### import
 USAGE: import IMPORT
 Example: import core/mktemp
