@@ -1,0 +1,45 @@
+# An getopt equivalent with longopts
+# Enture every option inside {}
+# Example:
+#      a|help|a:|version:|version::
+Extra::Getopt(){
+    local opt="$1"
+    local -n var="$2"
+    local -a opts
+    local option o parseOption p
+
+    [[ -z "$_OPTIND" ]] && _OPTIND="${BASH_ARGC[1]}"
+
+    o="${BASH_ARGV[$_OPTIND]}"
+
+    IFS='|' read -a opts <<<"$opt"
+    case "$o" in
+        -*)
+            [[ "$o" =~ ^[\-](.*) ]] && parseOption="${BASH_REMATCH[1]}"
+            for option in "${opts[@]}"; do
+                IFS=':' read -r p _ <<<"$option"
+                if [[ "$parseOption" == "$p" ]]; then
+                    var="$parseOption"
+                    if [[ "$option" == ${p}: ]]; then
+                        OPTARG="${BASH_ARGV[$_OPTIND - 1]}"
+                        (( _OPTIND-- ))
+                        (( OPTIND++ ))
+                    elif [[ "$option" == ${p}:: ]]; then
+                        [[ "${BASH_ARGV[$_OPTIND - 1]}" != -* ]] && {
+                            OPTARG="${BASH_ARGV[$_OPTIND - 1]}"
+                            (( _OPTIND-- ))
+                            (( OPTIND++ ))
+                        }
+                    fi
+                fi
+            done
+        ;;
+        *)
+            return 1
+        ;;
+    esac
+
+    (( _OPTIND-- ))
+    (( OPTIND++ ))
+    return 0
+}

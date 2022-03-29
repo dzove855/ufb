@@ -54,4 +54,7 @@ import(){
     die "Import of $1 failed! ${BASH_SOURCE[1]}:${BASH_LINENO[0]}"
 }
 
-source "$1"
+SOURCE_FILE="$1"
+shift
+
+source "$SOURCE_FILE"
