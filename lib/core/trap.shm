@@ -22,4 +22,4 @@ Core::Trap::Run(){
 
 trap 'Core::Trap::Run exit'     EXIT
 trap 'Core::Trap::Run err'      ERR
-trap 'Core::Trap::Run sigin'    SIGINT
+trap 'Core::Trap::Run sigint'   SIGINT
